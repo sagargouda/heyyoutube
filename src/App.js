@@ -1,7 +1,11 @@
+import Header from "./components/Header";
+import Body from "./components/Body";
+
 function App() {
   return (
     <div>
-      <h1>hey sagar</h1>
+        <Header/>
+        <Body/>
     </div>
   );
 }
