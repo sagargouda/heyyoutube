@@ -4,7 +4,7 @@ import MainContainer from "./MainContainer";
 
 function Body(props) {
     return (
-        <div className="flex " l>
+        <div className="flex " >
             <Sidebar/>
             <MainContainer/>
         </div>

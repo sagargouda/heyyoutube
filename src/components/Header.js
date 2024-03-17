@@ -3,12 +3,22 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { FaYoutube } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
+import {useDispatch} from "react-redux";
+import {toggling} from "../store/toggleSlice";
 function Header(props) {
+
+    //  dispatching toggle action
+    const dispatch = useDispatch()
+
+    function handleClick(){
+        dispatch(toggling())
+    }
+
     return (
         <div className="grid grid-flow-col p-4 m-2 shadow">
             {/*hamburger icon and logo section*/}
             <div className="flex gap-2 mt-2 col-span-4">
-                <GiHamburgerMenu size={30} />
+                <GiHamburgerMenu className="cursor-pointer" size={30} onClick={handleClick} />
                 <FaYoutube size={30} />
             </div>
 
