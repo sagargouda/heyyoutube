@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import {useParams, useSearchParams} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {closeMenu, toggling} from "../store/toggleSlice";
+import CommentsContainer from "./CommentsContainer";
 
 function WatchPage(props) {
 
@@ -16,12 +17,17 @@ function WatchPage(props) {
     }, []);
 
     return (
-        <div className="px-5">
-            <iframe width="1000" height="500" src={"https://www.youtube.com/embed/"+ searchParams.get('v')}
-                    title="YouTube video player"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen></iframe>
+        <div className="flex flex-col">
+            <div className="px-5">
+                <iframe width="500" height="500" src={"https://www.youtube.com/embed/" + searchParams.get('v')}
+                        title="YouTube video player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen></iframe>
+            </div>
+            <CommentsContainer/>
         </div>
+
+
     );
 }
 
