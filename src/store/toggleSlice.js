@@ -9,10 +9,13 @@ import {createSlice} from "@reduxjs/toolkit";
     reducers:{
         toggling:(state, action)=>{
             state.toggle = !state.toggle
+        },
+        closeMenu: (state , action) =>{
+            state.toggle = false
         }
     }
 })
 
 
-export const {toggling} = toggleSlice.actions
+export const {toggling, closeMenu} = toggleSlice.actions
 export default toggleSlice.reducer

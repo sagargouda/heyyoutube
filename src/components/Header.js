@@ -1,11 +1,37 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaYoutube } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
 import {useDispatch} from "react-redux";
 import {toggling} from "../store/toggleSlice";
+import {YOUTUBE_SEARCH_API} from "../utils/constants";
 function Header(props) {
+    const [searchQuery , setSearchQuery] = useState('')
+  const [ suggestions , setSuggestions] = useState([])
+    // console.log(searchQuery);
+
+
+    useEffect(() => {
+        //implemented debouncing
+        //  make an api call after every key press but if the difffrence between 2 Api calls is <200ms then decline api call
+  const timer = setTimeout(()=> getSearchSuggestions(), 200)
+
+        return () => {
+      clearTimeout(timer)
+        }
+    }, [searchQuery]);
+
+
+    const getSearchSuggestions = async () =>{
+  const data = await fetch(YOUTUBE_SEARCH_API + searchQuery)
+        const json = await data.json()
+        // console.log(json[1])
+        setSuggestions(json[1])
+    }
+
+
+
 
     //  dispatching toggle action
     const dispatch = useDispatch()
@@ -15,22 +41,37 @@ function Header(props) {
     }
 
     return (
-        <div className="grid grid-flow-col p-4 m-2 shadow">
+        <div className="grid grid-flow-col p-4 m-2 gap-3 shadow sticky top-0 bg-white z-10 ">
             {/*hamburger icon and logo section*/}
             <div className="flex gap-2 mt-2 col-span-4">
-                <GiHamburgerMenu className="cursor-pointer" size={30} onClick={handleClick} />
-                <FaYoutube size={30} />
+                <GiHamburgerMenu className="cursor-pointer" size={30} onClick={handleClick}/>
+                <FaYoutube className="hidden md:inline-block" size={30}/>
             </div>
-
-
 
 
             {/* search section */}
-            <div className="flex justify-between p-2 col-span-4 border-2 rounded-lg">
-                <input className="border-none outline-none w-[100%] overflow-hidden text-wrap" placeholder="Search" type="text"/>
-                <FaSearch  size={20} />
-            </div>
+            <div className=" p-2 col-span-4 border-2 rounded-lg">
+                <div className="flex justify-between">
+                    <input value={searchQuery} onChange={(e) => {
+                        setSearchQuery(e.target.value)
+                    }} className="border-none outline-none w-[100%] overflow-hidden text-wrap" placeholder="Search"
+                           type="text"/>
+                    <FaSearch size={20}/>
+                </div>
+                {
+                  suggestions.length >0 &&  <div className="fixed bg-white border border-gray mt-4 rounded-lg  drop-shadow-lg py-2  w-44 md:w-64">
+                        <ul>
+                            {
+                                suggestions && suggestions.map((item, index) => {
+                                    return <li className="px-5 shadow-sm py-1 hover:bg-gray-200" key={item}>{item}</li>
+                                })
+                            }
+                        </ul>
+                    </div>
+                }
 
+
+            </div>
 
 
             {/*user icon section*/}
