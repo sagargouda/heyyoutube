@@ -3,19 +3,38 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { FaYoutube } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {toggling} from "../store/toggleSlice";
 import {YOUTUBE_SEARCH_API} from "../utils/constants";
+import {cacheResults} from "../store/searchSlice";
 function Header(props) {
     const [searchQuery , setSearchQuery] = useState('')
   const [ suggestions , setSuggestions] = useState([])
+    const [showSuggestions , setShowSuggestions] = useState(false)
+
+
+
+    // subscribing to store
+    const searchCache = useSelector(store=>store.search)
+
+    // dispatching
+    const dispatch = useDispatch()
+
+
     // console.log(searchQuery);
 
 
     useEffect(() => {
         //implemented debouncing
         //  make an api call after every key press but if the difffrence between 2 Api calls is <200ms then decline api call
-  const timer = setTimeout(()=> getSearchSuggestions(), 200)
+  const timer = setTimeout(()=> {
+      if(searchCache[searchQuery]){
+          setSuggestions(searchCache[searchQuery])
+      }else{
+          getSearchSuggestions()
+      }
+
+  }, 200)
 
         return () => {
       clearTimeout(timer)
@@ -28,13 +47,15 @@ function Header(props) {
         const json = await data.json()
         // console.log(json[1])
         setSuggestions(json[1])
+
+    //     updating my cache
+
+        dispatch(cacheResults({
+           [searchQuery]: json[1]
+        }))
+
     }
 
-
-
-
-    //  dispatching toggle action
-    const dispatch = useDispatch()
 
     function handleClick(){
         dispatch(toggling())
@@ -52,14 +73,14 @@ function Header(props) {
             {/* search section */}
             <div className=" p-2 col-span-4 border-2 rounded-lg">
                 <div className="flex justify-between">
-                    <input value={searchQuery} onChange={(e) => {
+                    <input onFocus={()=> setShowSuggestions(true)} onBlur={()=> setShowSuggestions(false)}  value={searchQuery} onChange={(e) => {
                         setSearchQuery(e.target.value)
                     }} className="border-none outline-none w-[100%] overflow-hidden text-wrap" placeholder="Search"
                            type="text"/>
                     <FaSearch size={20}/>
                 </div>
                 {
-                  suggestions.length >0 &&  <div className="fixed bg-white border border-gray mt-4 rounded-lg  drop-shadow-lg py-2  w-44 md:w-64">
+                 showSuggestions && suggestions.length>0 &&  <div className="fixed bg-white border border-gray mt-4 rounded-lg  drop-shadow-lg py-2  w-44 md:w-64">
                         <ul>
                             {
                                 suggestions && suggestions.map((item, index) => {
